@@ -13,11 +13,11 @@
 ##############################################################################
 """UI for browsing database schema managers
 
-$Id$
 """
+from __future__ import print_function
 __docformat__ = 'restructuredtext'
 
-import transaction
+from transaction import TransactionManager
 
 import zope.component
 
@@ -42,7 +42,7 @@ class Managers(object):
            This method needs to use the component architecture, so
            we'll set it up:
 
-             >>> from zope.app.testing.placelesssetup import setUp, tearDown
+             >>> from zope.component.testing import setUp, tearDown
              >>> setUp()
 
            We also need a test request:
@@ -64,11 +64,11 @@ class Managers(object):
            using the demo package:
 
              >>> from zope.generations.generations import SchemaManager
-             >>> from zope.app.testing import ztapi
+             >>> from zope import component as ztapi
              >>> app1 = SchemaManager(0, 1, 'zope.generations.demo')
-             >>> ztapi.provideUtility(ISchemaManager, app1, 'foo.app1')
+             >>> ztapi.provideUtility(app1, ISchemaManager, 'foo.app1')
              >>> app2 = SchemaManager(0, 0, 'zope.generations.demo')
-             >>> ztapi.provideUtility(ISchemaManager, app2, 'foo.app2')
+             >>> ztapi.provideUtility(app2, ISchemaManager, 'foo.app2')
 
            And we need to record some data for them in the database.
 
@@ -163,7 +163,9 @@ class Managers(object):
         self.managers = managers = dict(
             zope.component.getUtilitiesFor(ISchemaManager))
         db = self._getdb()
-        conn = db.open()
+        transaction_manager = TransactionManager()
+        conn = db.open(transaction_manager=transaction_manager)
+        transaction_manager.begin()
         try:
             generations = conn.root().get(generations_key, ())
             request = self.request
@@ -174,17 +176,17 @@ class Managers(object):
                     manager = managers[key]
                     if generation >= manager.generation:
                         return {'app': key, 'to': 0}
+
                     context = Context()
                     context.connection = conn
                     generation += 1
                     manager.evolve(context, generation)
                     generations[key] = generation
-                    transaction.commit()
-                    return {'app': key, 'to': generation}
+                    transaction_manager.commit()
 
-            return None
+                    return {'app': key, 'to': generation}
         finally:
-            transaction.abort()
+            transaction_manager.abort()
             conn.close()
 
     def applications(self):
@@ -193,7 +195,7 @@ class Managers(object):
            This method needs to use the component architecture, so
            we'll set it up:
 
-             >>> from zope.app.testing.placelesssetup import setUp, tearDown
+             >>> from zope.component.testing import setUp, tearDown
              >>> setUp()
 
            We also need a test request:
@@ -215,11 +217,11 @@ class Managers(object):
            using the demo package:
 
              >>> from zope.generations.generations import SchemaManager
-             >>> from zope.app.testing import ztapi
+             >>> from zope import component as ztapi
              >>> app1 = SchemaManager(0, 1, 'zope.generations.demo')
-             >>> ztapi.provideUtility(ISchemaManager, app1, 'foo.app1')
+             >>> ztapi.provideUtility(app1, ISchemaManager, 'foo.app1')
              >>> app2 = SchemaManager(0, 0, 'zope.generations.demo')
-             >>> ztapi.provideUtility(ISchemaManager, app2, 'foo.app2')
+             >>> ztapi.provideUtility(app2, ISchemaManager, 'foo.app2')
 
            And we need to record some data for them in the database.
 
@@ -250,12 +252,12 @@ class Managers(object):
 
              >>> view.evolve()
              >>> data = list(view.applications())
-             >>> data.sort(lambda d1, d2: cmp(d1['id'], d2['id']))
+             >>> data.sort(key=lambda d1: d1['id'])
 
              >>> for info in data:
-             ...     print info['id']
-             ...     print info['min'], info['max'], info['generation']
-             ...     print 'evolve?', info['evolve'] or None
+             ...     print(info['id'])
+             ...     print(info['min'], info['max'], info['generation'])
+             ...     print('evolve?', info['evolve'] or None)
              foo.app1
              0 2 1
              evolve? evolve-app-foo.app1
@@ -272,14 +274,15 @@ class Managers(object):
         result = []
 
         db = self._getdb()
-        conn = db.open()
+        transaction_manager = TransactionManager()
+        conn = db.open(transaction_manager=transaction_manager)
+        transaction_manager.begin()
         try:
             managers = self.managers
             generations = conn.root().get(generations_key, ())
-            for key in generations:
-                generation = generations[key]
+            for key, generation in generations.items():
                 manager = managers.get(key)
-                if manager is None:
+                if manager is None: # pragma: no cover
                     continue
 
                 result.append({
@@ -295,4 +298,5 @@ class Managers(object):
 
             return result
         finally:
+            transaction_manager.abort()
             conn.close()

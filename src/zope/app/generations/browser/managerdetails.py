@@ -13,13 +13,87 @@
 ##############################################################################
 """Manager Details View
 
-$Id$
 """
 __docformat__ = "reStructuredText"
 import zope.component
 
+from zope.publisher.browser import BrowserView
 from zope.generations.interfaces import ISchemaManager
-from zope.app.renderer.rest import ReStructuredTextToHTMLRenderer
+
+import docutils.core
+
+
+class _ReStructuredTextToHTMLRenderer(BrowserView):
+    r"""An Adapter to convert from Restructured Text to HTML.
+
+    Examples::
+
+      >>> from zope.publisher.browser import TestRequest
+      >>> source = u'''
+      ... This is source.
+      ...
+      ... Header 3
+      ... --------
+      ... This is more source.
+      ... '''
+      >>> renderer = _ReStructuredTextToHTMLRenderer(source, TestRequest())
+      >>> print(renderer.render().strip())
+      <p>This is source.</p>
+      <div class="section" id="header-3">
+      <h3>Header 3</h3>
+      <p>This is more source.</p>
+      </div>
+    """
+
+    # Lifted from zope.app.renderers.rest
+
+    def render(self, settings_overrides={}):
+        """See zope.app.interfaces.renderer.IHTMLRenderer
+
+        Let's make sure that inputted unicode stays as unicode:
+
+        >>> renderer = _ReStructuredTextToHTMLRenderer(u'b\xc3h', None)
+        >>> output = renderer.render()
+        >>> isinstance(output, bytes)
+        False
+
+
+        >>> text = u'''
+        ... =========
+        ... Heading 1
+        ... =========
+        ...
+        ... hello world
+        ...
+        ... Heading 2
+        ... ========='''
+        >>> overrides = {'initial_header_level': 2,
+        ...              'doctitle_xform': 0 }
+        >>> renderer = _ReStructuredTextToHTMLRenderer(text, None)
+        >>> print(renderer.render(overrides))
+        <div class="section" id="heading-1">
+        <h2>Heading 1</h2>
+        <p>hello world</p>
+        <div class="section" id="heading-2">
+        <h3>Heading 2</h3>
+        </div>
+        </div>
+        <BLANKLINE>
+        """
+        # default settings for the renderer
+        overrides = {
+            'halt_level': 6,
+            'input_encoding': 'unicode',
+            'output_encoding': 'unicode',
+            'initial_header_level': 3,
+            }
+        overrides.update(settings_overrides)
+        parts = docutils.core.publish_parts(
+            self.context,
+            writer_name='html',
+            settings_overrides=overrides,
+            )
+        return u''.join((parts['body_pre_docinfo'], parts['docinfo'], parts['body']))
 
 class ManagerDetails(object):
     r"""Show Details of a particular Schema Manager's Evolvers
@@ -27,15 +101,15 @@ class ManagerDetails(object):
     This method needs to use the component architecture, so
     we'll set it up:
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
     We need to define some schema managers.  We'll define just one:
 
       >>> from zope.generations.generations import SchemaManager
-      >>> from zope.app.testing import ztapi
+      >>> from zope import component as ztapi
       >>> app1 = SchemaManager(0, 3, 'zope.generations.demo')
-      >>> ztapi.provideUtility(ISchemaManager, app1, 'foo.app1')
+      >>> ztapi.provideUtility(app1, ISchemaManager, 'foo.app1')
 
     Now let's create the view:
 
@@ -53,7 +127,7 @@ class ManagerDetails(object):
 
       >>> info = details.getEvolvers()
       >>> for item in info:
-      ...     print sorted(item.items())
+      ...     print(sorted(item.items()))
       [('from', 0), ('info', u'<p>Evolver 1</p>\n'), ('to', 1)]
       [('from', 1), ('info', u'<p>Evolver 2</p>\n'), ('to', 2)]
       [('from', 2), ('info', ''), ('to', 3)]
@@ -62,6 +136,9 @@ class ManagerDetails(object):
 
       >>> tearDown()
     """
+
+    request = None
+    context = None
 
     id = property(lambda self: self.request['id'])
 
@@ -73,15 +150,15 @@ class ManagerDetails(object):
 
         for gen in range(manager.minimum_generation, manager.generation):
 
-            info = manager.getInfo(gen+1)
+            info = manager.getInfo(gen + 1)
             if info is None:
                 info = ''
             else:
-                # XXX: the renderer *expects* unicode as input encoding (ajung)
-                renderer = ReStructuredTextToHTMLRenderer(
-                    unicode(info), self.request)
+                renderer = _ReStructuredTextToHTMLRenderer(
+                    info.decode('utf-8') if isinstance(info, bytes) else info,
+                    self.request)
                 info = renderer.render()
 
-            evolvers.append({'from': gen, 'to': gen+1, 'info': info})
+            evolvers.append({'from': gen, 'to': gen + 1, 'info': info})
 
         return evolvers

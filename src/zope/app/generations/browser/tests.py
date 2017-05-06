@@ -13,76 +13,116 @@
 ##############################################################################
 """Generation-browser tests
 
-$Id$
 """
+import re
 import unittest
 import doctest
+import importlib
+from webtest import TestApp
+from zope import component as ztapi
+from zope.testing import renormalizing
 from zope.app.generations.testing import GenerationsLayer
-from zope.app.testing import ztapi, functional
 from zope.generations.generations import SchemaManager, generations_key
 from zope.generations.interfaces import ISchemaManager
 
-class TestDatabaseSchema(functional.BrowserTestCase):
+class TestDatabaseSchema(unittest.TestCase):
+
+    layer = GenerationsLayer
+
+    def setUp(self):
+        self._testapp = TestApp(self.layer.make_wsgi_app())
+
+    def commit(self):
+        import transaction
+        transaction.commit()
+
+    def publish(self, path, basic=None, headers=None):
+        assert basic
+        self._testapp.authorization = ('Basic', tuple(basic.split(':')))
+        env = {'wsgi.handleErrors': False}
+        response = self._testapp.get(path, extra_environ=env, headers=headers)
+        return response
 
     def test(self):
-        root = self.getRootFolder()._p_jar.root()
+        root = self.layer.getRootFolder()._p_jar.root()
         appkey = 'zope.generations.demo'
         root[generations_key][appkey] = 0
         self.commit()
         manager = SchemaManager(0, 3, 'zope.generations.demo')
 
-        ztapi.provideUtility(ISchemaManager, manager, appkey)
+        ztapi.provideUtility(manager, ISchemaManager, appkey)
+        sm = ztapi.getSiteManager()
+        self.addCleanup(sm.unregisterUtility, manager, ISchemaManager, appkey)
 
         response = self.publish('/++etc++process/@@generations.html',
                                 basic='globalmgr:globalmgrpw')
-        body = response.getBody()
-        body = ' '.join(body.split())
-        expect = ('zope.generations.demo</a> </td> '
-                  '<td>0</td> <td>3</td> <td>0</td> '
-                  '<td> <input type="submit" value=" evolve " '
-                  'name="evolve-app-zope.generations.demo"> </td>')
-        self.assert_(body.find(expect) > 0)
+        body = response.text
+        body = u' '.join(body.split())
+        expect = (u'zope.generations.demo</a> </td> '
+                  u'<td>0</td> <td>3</td> <td>0</td> '
+                  u'<td> <input type="submit" value=" evolve " '
+                  u'name="evolve-app-zope.generations.demo"> </td>')
+        self.assertIn(expect, body)
 
         response = self.publish('/++etc++process/@@generations.html'
                                 '?evolve-app-zope.generations.demo=evolve',
                                 basic='globalmgr:globalmgrpw')
-        body = response.getBody()
-        body = ' '.join(body.split())
-        expect = ('zope.generations.demo</a> </td> '
-                  '<td>0</td> <td>3</td> <td>1</td> '
-                  '<td> <input type="submit" value=" evolve " '
-                  'name="evolve-app-zope.generations.demo"> </td>')
-        self.assert_(body.find(expect) > 0)
+        body = response.text
+        body = u' '.join(body.split())
+        expect = (u'zope.generations.demo</a> </td> '
+                  u'<td>0</td> <td>3</td> <td>1</td> '
+                  u'<td> <input type="submit" value=" evolve " '
+                  u'name="evolve-app-zope.generations.demo"> </td>')
+        self.assertIn(expect, body)
 
         response = self.publish('/++etc++process/@@generations.html'
                                 '?evolve-app-zope.generations.demo=evolve',
                                 basic='globalmgr:globalmgrpw')
-        body = response.getBody()
-        body = ' '.join(body.split())
-        expect = ('zope.generations.demo</a> </td> '
-                  '<td>0</td> <td>3</td> <td>2</td> '
-                  '<td> <input type="submit" value=" evolve " '
-                  'name="evolve-app-zope.generations.demo"> </td>')
-        self.assert_(body.find(expect) > 0)
+        body = response.text
+        body = u' '.join(body.split())
+        expect = (u'zope.generations.demo</a> </td> '
+                  u'<td>0</td> <td>3</td> <td>2</td> '
+                  u'<td> <input type="submit" value=" evolve " '
+                  u'name="evolve-app-zope.generations.demo"> </td>')
+        self.assertIn(expect, body)
 
         response = self.publish('/++etc++process/@@generations.html'
                                 '?evolve-app-zope.generations.demo=evolve',
                                 basic='globalmgr:globalmgrpw')
-        body = response.getBody()
-        body = ' '.join(body.split())
-        expect = ('zope.generations.demo</a> </td> '
-                  '<td>0</td> <td>3</td> <td>3</td> '
-                  '<td> <span>')
-        self.assert_(body.find(expect) > 0)
+        body = response.text
+        body = u' '.join(body.split())
+        expect = (u'zope.generations.demo</a> </td> '
+                  u'<td>0</td> <td>3</td> <td>3</td> '
+                  u'<td> <span>')
+        self.assertIn(expect, body)
 
-        ztapi.unprovideUtility(ISchemaManager, appkey)
+
+def _make_import_test(mod_name, attrname):
+    def test(self):
+        mod = importlib.import_module('zope.app.generations.' + mod_name)
+        self.assertIsNotNone(getattr(mod, attrname))
+
+    return test
+
+class TestBWCImports(unittest.TestCase):
+
+    for mod_name, attrname in (('generations', 'ISchemaManager'),
+                               ('utility', 'getRootFolder'),
+                               ('interfaces', 'ISchemaManager')):
+        locals()['test_' + mod_name] = _make_import_test(mod_name, attrname)
 
 
 
 def test_suite():
-    TestDatabaseSchema.layer = GenerationsLayer
+    checker = renormalizing.RENormalizing((
+        (re.compile(r"u('.*')"), r"\1"),
+    ))
     return unittest.TestSuite((
-        doctest.DocTestSuite('zope.app.generations.browser.managers'),
-        doctest.DocTestSuite('zope.app.generations.browser.managerdetails'),
-        unittest.makeSuite(TestDatabaseSchema),
-        ))
+        doctest.DocTestSuite(
+            'zope.app.generations.browser.managers',
+            checker=checker),
+        doctest.DocTestSuite(
+            'zope.app.generations.browser.managerdetails',
+            checker=checker),
+        unittest.defaultTestLoader.loadTestsFromName(__name__),
+    ))
