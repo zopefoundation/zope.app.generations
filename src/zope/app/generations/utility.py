@@ -15,7 +15,4 @@
 
 #BBB imports
 from zope.generations.utility import findObjectsMatching, findObjectsProviding
-try:
-    from zope.generations.utility import getRootFolder
-except ImportError:
-    pass
+from zope.generations.utility import getRootFolder

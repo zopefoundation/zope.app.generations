@@ -12,15 +12,13 @@
 #
 ##############################################################################
 """zope.app.generations common test related classes/functions/objects.
-
-$Id$
 """
 
 __docformat__ = "reStructuredText"
 
-import os
-from zope.app.testing.functional import ZCMLLayer
+from zope.app.wsgi.testlayer import BrowserLayer
+import zope.app.generations
 
-GenerationsLayer = ZCMLLayer(
-    os.path.join(os.path.split(__file__)[0], 'ftesting.zcml'),
-    __name__, 'GenerationsLayer', allow_teardown=True)
+
+GenerationsLayer = BrowserLayer(zope.app.generations,
+                                allowTearDown=True)

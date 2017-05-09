@@ -2,10 +2,18 @@
 CHANGES
 =======
 
-3.7.2 (unreleased)
+4.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for Python 3.4, 3.5, 3.6 and PyPy.
+
+- Fix the ``evolve`` view to use independent transactions instead of
+  committing or aborting the thread-local current transaction.
+
+- Drop dependency on ``zope.app.renderer``.
+
+- Drop test dependency on ``zope.app.testing``, ``zope.app.zcmlfiles``
+  and others.
 
 
 3.7.1 (2012-01-23)
