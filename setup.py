@@ -53,7 +53,7 @@ tests_require = [
 
 
 setup(name='zope.app.generations',
-      version='4.0.0',
+      version='4.0.1.dev0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='ZMI UI for zope.generations',
