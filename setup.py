@@ -23,9 +23,11 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
+
 
 tests_require = [
     'ZODB',
@@ -53,15 +55,15 @@ tests_require = [
 
 
 setup(name='zope.app.generations',
-      version='4.0.1.dev0',
-      author='Zope Corporation and Contributors',
+      version='4.1.0.dev0',
+      author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.org',
       description='ZMI UI for zope.generations',
       long_description=(
           read('README.rst')
           + '\n\n.. contents::\n\n' +
           read('CHANGES.rst')
-          ),
+      ),
       keywords="zope zmi zodb schema generation",
       classifiers=[
           'Development Status :: 5 - Production/Stable',
@@ -77,9 +79,11 @@ setup(name='zope.app.generations',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: 3.9',
           'Programming Language :: Python :: Implementation :: CPython',
           'Programming Language :: Python :: Implementation :: PyPy',
       ],
@@ -103,4 +107,4 @@ setup(name='zope.app.generations',
       ],
       include_package_data=True,
       zip_safe=False,
-)
+      )

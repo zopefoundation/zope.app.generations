@@ -26,6 +26,7 @@ from zope.generations.generations import generations_key, Context
 
 request_key_format = "evolve-app-%s"
 
+
 class Managers(object):
 
     def __init__(self, context, request):
@@ -56,7 +57,7 @@ class Managers(object):
              ...     pass
 
              >>> request.setPublication(Publication())
-             >>> from ZODB.tests.util import DB
+             >>> from ZODB.MappingStorage import DB
              >>> db = DB()
              >>> request.publication.db = db
 
@@ -209,7 +210,7 @@ class Managers(object):
              ...     pass
 
              >>> request.setPublication(Publication())
-             >>> from ZODB.tests.util import DB
+             >>> from ZODB.MappingStorage import DB
              >>> db = DB()
              >>> request.publication.db = db
 
@@ -282,7 +283,7 @@ class Managers(object):
             generations = conn.root().get(generations_key, ())
             for key, generation in generations.items():
                 manager = managers.get(key)
-                if manager is None: # pragma: no cover
+                if manager is None:  # pragma: no cover
                     continue
 
                 result.append({
@@ -294,7 +295,7 @@ class Managers(object):
                                and request_key_format % key
                                or ''
                                ),
-                    })
+                })
 
             return result
         finally:
