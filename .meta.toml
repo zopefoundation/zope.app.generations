@@ -22,3 +22,9 @@ additional-config = [
     "    src/zope/app/generations/generations.py: F401",
     "    src/zope/app/generations/utility.py: F401",
     ]
+
+[coverage-run]
+additional-config = [
+    "omit =",
+    "    src/zope/app/generations/demo/install.py",
+    ]
