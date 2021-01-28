@@ -11,8 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Utility functions for evolving database generations."""
+"""Silly demo evolution module."""
 
-# BBB imports
-from zope.generations.utility import findObjectsMatching, findObjectsProviding
-from zope.generations.utility import getRootFolder
+
+generation = 1
+
+
+def evolve(context):
+    """Evolver 1"""

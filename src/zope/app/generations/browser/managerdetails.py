@@ -86,14 +86,17 @@ class _ReStructuredTextToHTMLRenderer(BrowserView):
             'input_encoding': 'unicode',
             'output_encoding': 'unicode',
             'initial_header_level': 3,
-            }
+        }
         overrides.update(settings_overrides)
         parts = docutils.core.publish_parts(
             self.context,
             writer_name='html',
             settings_overrides=overrides,
-            )
-        return u''.join((parts['body_pre_docinfo'], parts['docinfo'], parts['body']))
+        )
+        return u''.join((parts['body_pre_docinfo'],
+                         parts['docinfo'],
+                         parts['body']))
+
 
 class ManagerDetails(object):
     r"""Show Details of a particular Schema Manager's Evolvers

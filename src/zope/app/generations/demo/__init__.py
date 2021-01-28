@@ -11,8 +11,19 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Utility functions for evolving database generations."""
+"""Demo package for evolution scripts
 
-# BBB imports
-from zope.generations.utility import findObjectsMatching, findObjectsProviding
-from zope.generations.utility import getRootFolder
+The evolution scripts in this package are pretty dumb. The just call
+the evolve function defined here with a generation number.
+
+"""
+key = 'zope.app.generations.demo-generation'
+
+
+def evolve(context, generation):
+    """Demo that "evolves" a database.
+
+    All it does is write the generation to a database root item.
+    """
+    root = context.connection.root()
+    root[key] = root.get(key, ()) + (generation, )
