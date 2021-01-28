@@ -17,7 +17,7 @@ The evolution scripts in this package are pretty dumb. The just call
 the evolve function defined here with a generation number.
 
 """
-key = 'zope.generations.demo-generation'
+key = 'zope.app.generations.demo-generation'
 
 
 def evolve(context, generation):
