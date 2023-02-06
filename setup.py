@@ -12,7 +12,7 @@
 #
 ##############################################################################
 # This package is developed by the Zope Toolkit project, documented here:
-# http://docs.zope.org/zopetoolkit
+# https://zopetoolkit.readthedocs.io/
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
@@ -59,7 +59,7 @@ tests_require = [
 setup(name='zope.app.generations',
       version='5.0.dev0',
       author='Zope Foundation and Contributors',
-      author_email='zope-dev@zope.org',
+      author_email='zope-dev@zope.dev',
       description='ZMI UI for zope.generations',
       long_description=(
           read('README.rst')
@@ -92,6 +92,7 @@ setup(name='zope.app.generations',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope', 'zope.app'],
+      python_requires='>=3.7',
       extras_require={
           'test': tests_require,
       },

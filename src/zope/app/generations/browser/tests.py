@@ -61,43 +61,43 @@ class TestDatabaseSchema(unittest.TestCase):
         response = self.publish('/++etc++process/@@generations.html',
                                 basic='globalmgr:globalmgrpw')
         body = response.text
-        body = u' '.join(body.split())
-        expect = (u'zope.app.generations.demo</a> </td> '
-                  u'<td>0</td> <td>3</td> <td>0</td> '
-                  u'<td> <input type="submit" value=" evolve " '
-                  u'name="evolve-app-zope.app.generations.demo"> </td>')
+        body = ' '.join(body.split())
+        expect = ('zope.app.generations.demo</a> </td> '
+                  '<td>0</td> <td>3</td> <td>0</td> '
+                  '<td> <input type="submit" value=" evolve " '
+                  'name="evolve-app-zope.app.generations.demo"> </td>')
         self.assertIn(expect, body)
 
         response = self.publish('/++etc++process/@@generations.html'
                                 '?evolve-app-zope.app.generations.demo=evolve',
                                 basic='globalmgr:globalmgrpw')
         body = response.text
-        body = u' '.join(body.split())
-        expect = (u'zope.app.generations.demo</a> </td> '
-                  u'<td>0</td> <td>3</td> <td>1</td> '
-                  u'<td> <input type="submit" value=" evolve " '
-                  u'name="evolve-app-zope.app.generations.demo"> </td>')
+        body = ' '.join(body.split())
+        expect = ('zope.app.generations.demo</a> </td> '
+                  '<td>0</td> <td>3</td> <td>1</td> '
+                  '<td> <input type="submit" value=" evolve " '
+                  'name="evolve-app-zope.app.generations.demo"> </td>')
         self.assertIn(expect, body)
 
         response = self.publish('/++etc++process/@@generations.html'
                                 '?evolve-app-zope.app.generations.demo=evolve',
                                 basic='globalmgr:globalmgrpw')
         body = response.text
-        body = u' '.join(body.split())
-        expect = (u'zope.app.generations.demo</a> </td> '
-                  u'<td>0</td> <td>3</td> <td>2</td> '
-                  u'<td> <input type="submit" value=" evolve " '
-                  u'name="evolve-app-zope.app.generations.demo"> </td>')
+        body = ' '.join(body.split())
+        expect = ('zope.app.generations.demo</a> </td> '
+                  '<td>0</td> <td>3</td> <td>2</td> '
+                  '<td> <input type="submit" value=" evolve " '
+                  'name="evolve-app-zope.app.generations.demo"> </td>')
         self.assertIn(expect, body)
 
         response = self.publish('/++etc++process/@@generations.html'
                                 '?evolve-app-zope.app.generations.demo=evolve',
                                 basic='globalmgr:globalmgrpw')
         body = response.text
-        body = u' '.join(body.split())
-        expect = (u'zope.app.generations.demo</a> </td> '
-                  u'<td>0</td> <td>3</td> <td>3</td> '
-                  u'<td> <span>')
+        body = ' '.join(body.split())
+        expect = ('zope.app.generations.demo</a> </td> '
+                  '<td>0</td> <td>3</td> <td>3</td> '
+                  '<td> <span>')
         self.assertIn(expect, body)
 
 

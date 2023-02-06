@@ -14,7 +14,6 @@
 """UI for browsing database schema managers
 
 """
-from __future__ import print_function
 
 
 __docformat__ = 'restructuredtext'
@@ -29,7 +28,7 @@ from zope.generations.interfaces import ISchemaManager
 request_key_format = "evolve-app-%s"
 
 
-class Managers(object):
+class Managers:
 
     def __init__(self, context, request):
         self.context = context
