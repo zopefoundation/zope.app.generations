@@ -14,6 +14,9 @@
 """Interfaces for support for application database generations"""
 
 # BBB imports
-from zope.generations.interfaces import (
-    GenerationError, GenerationTooHigh, GenerationTooLow, UnableToEvolve,
-    ISchemaManager, IInstallableSchemaManager)
+from zope.generations.interfaces import GenerationError
+from zope.generations.interfaces import GenerationTooHigh
+from zope.generations.interfaces import GenerationTooLow
+from zope.generations.interfaces import IInstallableSchemaManager
+from zope.generations.interfaces import ISchemaManager
+from zope.generations.interfaces import UnableToEvolve

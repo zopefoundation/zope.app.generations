@@ -14,16 +14,19 @@
 """Generation-browser tests
 
 """
-import re
-import unittest
 import doctest
 import importlib
+import re
+import unittest
+
 from webtest import TestApp
-from zope import component as ztapi
-from zope.testing import renormalizing
-from zope.app.generations.testing import GenerationsLayer
-from zope.generations.generations import SchemaManager, generations_key
+from zope.generations.generations import SchemaManager
+from zope.generations.generations import generations_key
 from zope.generations.interfaces import ISchemaManager
+from zope.testing import renormalizing
+
+from zope import component as ztapi
+from zope.app.generations.testing import GenerationsLayer
 
 
 class TestDatabaseSchema(unittest.TestCase):

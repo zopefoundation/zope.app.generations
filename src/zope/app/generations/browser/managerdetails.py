@@ -15,12 +15,11 @@
 
 """
 __docformat__ = "reStructuredText"
-import zope.component
-
-from zope.publisher.browser import BrowserView
-from zope.generations.interfaces import ISchemaManager
-
 import docutils.core
+
+import zope.component
+from zope.generations.interfaces import ISchemaManager
+from zope.publisher.browser import BrowserView
 
 
 class _ReStructuredTextToHTMLRenderer(BrowserView):

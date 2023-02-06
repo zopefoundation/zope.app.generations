@@ -15,14 +15,16 @@
 
 """
 from __future__ import print_function
+
+
 __docformat__ = 'restructuredtext'
 
-from transaction import TransactionManager
-
 import zope.component
-
+from transaction import TransactionManager
+from zope.generations.generations import Context
+from zope.generations.generations import generations_key
 from zope.generations.interfaces import ISchemaManager
-from zope.generations.generations import generations_key, Context
+
 
 request_key_format = "evolve-app-%s"
 
