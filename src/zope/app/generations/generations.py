@@ -13,11 +13,21 @@
 ##############################################################################
 """Support for application database generations."""
 
+from zope.generations.generations import EVOLVE
+from zope.generations.generations import EVOLVEMINIMUM
+from zope.generations.generations import EVOLVENOT
+from zope.generations.generations import Context
+from zope.generations.generations import PersistentDict
+from zope.generations.generations import SchemaManager
+from zope.generations.generations import evolve
+from zope.generations.generations import evolveMinimumSubscriber
+from zope.generations.generations import evolveNotSubscriber
+from zope.generations.generations import evolveSubscriber
+from zope.generations.generations import findManagers
+from zope.generations.generations import generations_key
 # BBB imports
-from zope.generations.interfaces import (
-    GenerationTooHigh, GenerationTooLow, UnableToEvolve,
-    ISchemaManager, IInstallableSchemaManager)
-from zope.generations.generations import (
-    generations_key, SchemaManager, Context, findManagers, PersistentDict,
-    EVOLVE, EVOLVENOT, EVOLVEMINIMUM, evolve, evolveSubscriber,
-    evolveNotSubscriber, evolveMinimumSubscriber)
+from zope.generations.interfaces import GenerationTooHigh
+from zope.generations.interfaces import GenerationTooLow
+from zope.generations.interfaces import IInstallableSchemaManager
+from zope.generations.interfaces import ISchemaManager
+from zope.generations.interfaces import UnableToEvolve

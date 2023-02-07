@@ -15,12 +15,11 @@
 
 """
 __docformat__ = "reStructuredText"
-import zope.component
-
-from zope.publisher.browser import BrowserView
-from zope.generations.interfaces import ISchemaManager
-
 import docutils.core
+
+import zope.component
+from zope.generations.interfaces import ISchemaManager
+from zope.publisher.browser import BrowserView
 
 
 class _ReStructuredTextToHTMLRenderer(BrowserView):
@@ -93,12 +92,12 @@ class _ReStructuredTextToHTMLRenderer(BrowserView):
             writer_name='html',
             settings_overrides=overrides,
         )
-        return u''.join((parts['body_pre_docinfo'],
-                         parts['docinfo'],
-                         parts['body']))
+        return ''.join((parts['body_pre_docinfo'],
+                        parts['docinfo'],
+                        parts['body']))
 
 
-class ManagerDetails(object):
+class ManagerDetails:
     r"""Show Details of a particular Schema Manager's Evolvers
 
     This method needs to use the component architecture, so

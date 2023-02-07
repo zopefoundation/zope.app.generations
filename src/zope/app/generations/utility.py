@@ -14,5 +14,6 @@
 """Utility functions for evolving database generations."""
 
 # BBB imports
-from zope.generations.utility import findObjectsMatching, findObjectsProviding
+from zope.generations.utility import findObjectsMatching
+from zope.generations.utility import findObjectsProviding
 from zope.generations.utility import getRootFolder
